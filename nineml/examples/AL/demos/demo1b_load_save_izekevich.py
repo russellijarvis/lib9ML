@@ -7,9 +7,10 @@ iz_file = '../../../../../../catalog/sample_xml_files/PostTF_izhikevich.xml'
 iz = nineml.al.parse(iz_file)
 
 # Write the component back out to XML
-nineml.al.writers.XMLWriter.write(iz, 'TestOut_Iz.xml')
-nineml.al.writers.DotWriter.write(iz, 'TestOut_Iz.dot')
-nineml.al.writers.DotWriter.build('TestOut_Iz.dot')
+save_prefix = "./.output/demo2a/"
+nineml.al.writers.XMLWriter.write(iz, save_prefix+'TestOut_Iz.xml')
+nineml.al.writers.DotWriter.write(iz, save_prefix+'TestOut_Iz.dot')
+nineml.al.writers.DotWriter.build(save_prefix+'TestOut_Iz.dot')
 
 
 # Simulate the Neuron:

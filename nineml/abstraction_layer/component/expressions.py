@@ -100,40 +100,19 @@ class Expression(object):
         return atoms
 
 
-    #@property
-    # def rhs_missing_functions(self):
-    #    """ yield names of functions in the RHS which are not in the math
-    #    namespace"""
-    #    raise NineMLRuntimeError()
-    #    from nineml.maths import is_builtin_math_function
-    #    for func in self.rhs_funcs:
-    #        if not is_builtin_math_function(func):
-    #            raise NineMLRuntimeError('Unexpected Missing Function: %s'%func)
-    #            yield func
-    #
-    # def rhs_has_missing_functions(self):
-    #    assert False
-    #    """ returns True if at least 1 function on the RHS is not in the math
-    #    namespace"""
-    #    from nineml.maths import is_builtin_math_function
-    #    for func in self.rhs_funcs:
-    #        if not is_builtin_math_function(func):
-    #            raise NineMLRuntimeError('Unexpected Missing Function: %s'%func)
-    #            return True
-    #    return False
-# TO GO:
-class Equation(Expression):
-
-    def __init__(self, rhs):
-        Expression.__init__(self, rhs)
+## TO GO:
+#class Equation(Expression):
+#
+#    def __init__(self, rhs):
+#        Expression.__init__(self, rhs)
 
 
-class ExpressionWithLHS(Equation):
+class ExpressionWithLHS(Expression):
     # Sub-classes should over ride this, to allow
     # proper-prefixing:
 
     def __init__(self, rhs):
-        Equation.__init__(self, rhs)
+        Expression.__init__(self, rhs)
 
     def name_transform_inplace(self, name_map):
 

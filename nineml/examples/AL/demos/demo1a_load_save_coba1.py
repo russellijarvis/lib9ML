@@ -8,9 +8,10 @@ coba1_base = TestableComponent('hierachical_iaf_1coba')
 coba1 = coba1_base()
 
 # Write the component back out to XML
-nineml.al.writers.XMLWriter.write(coba1, 'TestOut_Coba1.xml')
-nineml.al.writers.DotWriter.write(coba1, 'TestOut_Coba1.dot')
-nineml.al.writers.DotWriter.build('TestOut_Coba1.dot')
+save_prefix = "./.output/demo1a/"
+nineml.al.writers.XMLWriter.write(coba1, save_prefix+'TestOut_Coba1.xml')
+nineml.al.writers.DotWriter.write(coba1, save_prefix+'TestOut_Coba1.dot')
+nineml.al.writers.DotWriter.build(save_prefix+'TestOut_Coba1.dot')
 
 
 # Simulate the Neuron:

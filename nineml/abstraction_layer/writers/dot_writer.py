@@ -166,6 +166,12 @@ class DotWriter(object):
         p = re.compile(r'\s+')
         regime_text = p.sub(' ', regime_text)
 
-        f = open(filename, 'w')
-        f.write(regime_text)
-        f.close()
+
+        # Allow writes into directories that don't exist yet:
+        if isinstance(filename, basestring):
+            dname = os.path.dirname(filename)
+            if dname and not os.path.exists(dname):
+                os.makedirs(dname)
+
+        with open(filename, 'w') as f:
+            f.write(regime_text)

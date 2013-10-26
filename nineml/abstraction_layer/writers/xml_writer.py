@@ -5,6 +5,7 @@ docstring needed
 :license: BSD-3, see LICENSE for details.
 """
 
+import os
 from itertools import chain
 from lxml import etree
 from lxml.builder import E
@@ -24,6 +25,13 @@ class XMLWriter(ComponentVisitor):
             else:
                 import nineml.abstraction_layer.flattening as flattening
                 component = flattening.ComponentFlattener(component).reducedcomponent
+
+
+        # Allow writes into directories that don't exist yet:
+        if isinstance(file, basestring):
+            dname = os.path.dirname(file)
+            if dname and not os.path.exists(dname):
+                os.makedirs(dname)
 
         xml = XMLWriter().visit(component)
         doc = E.NineML(xml, xmlns=nineml.al.nineml_namespace)

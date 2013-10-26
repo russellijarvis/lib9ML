@@ -61,6 +61,9 @@ class ComponentModifier(object):
         if not component.is_flat():
             raise NineMLRuntimeError('rename_port_to_parameter() on non-flat component')
 
+        print component._analog_ports
+
+
         # Find the old port:
         port = filter_expect_single(component.analog_ports,
                                     lambda ap: ap.name == port_name)
