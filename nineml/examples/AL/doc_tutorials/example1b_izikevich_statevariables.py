@@ -12,10 +12,10 @@ regime = al.Regime(
 # Create the ComponentClass, including the dynamics.
 iz = al.ComponentClass(
     name="IzikevichNeuron",
-    parameters=['a', 'b', 'c', 'd'],
+    parameters=['a', 'b'],
     analog_ports=[al.AnalogPort('I', mode='recv'),
                   al.AnalogPort('V', mode='send')],
-    event_ports=[al.EventPort('spikeoutput', mode='send')],
+    #event_ports=[al.EventPort('spikeoutput', mode='send')],
 
     dynamics=al.Dynamics(regimes=[regime],
                          state_variables=['V', 'U'])

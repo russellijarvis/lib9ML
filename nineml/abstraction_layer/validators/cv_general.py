@@ -367,7 +367,7 @@ class ComponentValidatorCheckNoLHSAssignmentsToMathsNamespace(ComponentValidator
         assert isinstance(symbol, basestring)
 
         if not nineml.maths.is_valid_lhs_target(symbol):
-            err = 'Symbol: %s found on left-hand-side of an equation'
+            err = 'Symbol: %s found on left-hand-side of an equation' % symbol
             raise nineml.exceptions.NineMLRuntimeError(err)
 
     def action_statevariable(self, state_variable, **kwargs):

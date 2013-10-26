@@ -358,6 +358,7 @@ class Regime(object):
         self._resolve_references_on_transition(on_condition)
         self._on_conditions.append(on_condition)
 
+
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.name)
 
@@ -489,9 +490,9 @@ class Dynamics(object):
         sv_from_strings = [StateVariable(o) for o in sv_td[basestring]]
         state_variables = sv_td[StateVariable] + sv_from_strings
 
-        self._regimes = regimes
-        self._aliases = aliases
-        self._state_variables = state_variables
+        self._regimes = list(regimes)
+        self._aliases = list(aliases)
+        self._state_variables = list(state_variables)
 
     def accept_visitor(self, visitor, **kwargs):
         """ |VISITATION| """

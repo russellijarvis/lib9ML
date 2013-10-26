@@ -368,7 +368,8 @@ class ComponentClass(ComponentClassMixinFlatStructure,
     def __init__(self, name, parameters=None, analog_ports=None,
                  event_ports=None, dynamics=None, subnodes=None,
                  portconnections=None, regimes=None,
-                 aliases=None, state_variables=None):
+                 aliases=None, state_variables=None,
+                 strict_interface_check=True):
         """Constructs a ComponentClass
 
         :param name: The name of the component.
@@ -393,6 +394,9 @@ class ComponentClass(ComponentClassMixinFlatStructure,
             this component; |Parameters|, |AnalogPorts| and |EventPorts|.
             ``interface`` takes a list of these objects, and automatically
             resolves them by type into the correct types.
+        :param strict_interface_check: Normally, components interfaces, if
+        given, must match what is inferred by looking at the equations. This
+        option bypasses these checks.
 
         Examples:
 
@@ -402,7 +406,6 @@ class ComponentClass(ComponentClassMixinFlatStructure,
 
             Point this towards and example of constructing ComponentClasses.
             This can't be here, because we also need to know about dynamics.
-            For examples
 
         """
 
@@ -430,10 +433,16 @@ class ComponentClass(ComponentClassMixinFlatStructure,
 
         self._query = componentqueryer.ComponentQueryer(self)
 
+
         # EventPort, StateVariable and Parameter Inference:
         inferred_struct = InterfaceInferer(dynamics, analog_ports=analog_ports)
-        inf_check = lambda l1, l2, desc: check_list_contain_same_items(l1, l2,
-                                                                       desc1='Declared', desc2='Inferred', ignore=['t'], desc=desc)
+       
+        # Are we checking?
+        if strict_interface_check:
+            inf_check = lambda l1, l2, desc: check_list_contain_same_items(l1, l2, desc1='Declared', desc2='Inferred', ignore=['t'], desc=desc)
+        else:
+            inf_check = lambda l1, l2, desc: None
+
 
         # Check any supplied parameters match:
         if parameters is not None:

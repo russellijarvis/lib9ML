@@ -35,7 +35,7 @@ class ActionVisitor(ComponentVisitor):
 
     def visit_dynamics(self, dynamics, **kwargs):
         self.action_dynamics(dynamics, **kwargs)
-        nodes = chain(dynamics.regimes, dynamics.aliases, dynamics.state_variables)
+        nodes = list(chain(dynamics.regimes, dynamics.aliases, dynamics.state_variables))
         for p in nodes:
             p.accept_visitor(self, **kwargs)
 
@@ -86,8 +86,6 @@ class ActionVisitor(ComponentVisitor):
     def visit_onevent(self, on_event, **kwargs):
         self.action_onevent(on_event, **kwargs)
         nodes = chain(on_event.event_outputs, on_event.state_assignments)
-        nodes = list(nodes)
-        # print nodes
         for p in nodes:
             p.accept_visitor(self, **kwargs)
 

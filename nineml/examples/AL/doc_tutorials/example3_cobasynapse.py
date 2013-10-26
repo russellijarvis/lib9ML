@@ -2,7 +2,7 @@ import nineml.abstraction_layer as al
 
 cond_decay = al.Regime(name='default',
                        time_derivatives=["dg/dt = -g/tau"],
-                       transitions=[al.On(al.InputEvent('spikeinput'), do="g = g + q")]
+                       transitions=[al.On('spikeinput', do="g = g + q")]
                        )
 
 
