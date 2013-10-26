@@ -1,0 +1,9 @@
+
+Import('env')
+
+# Run all the python files in this directory:
+files = Glob('*.py')
+for f in files:
+    env.PyScript(f)
+
+# vim: set ft=python:

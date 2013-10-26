@@ -5,10 +5,10 @@ from nineml.abstraction_layer import ComponentClass, SendPort, Regime, ReducePor
 import unittest
 
 
-class FuncTest_Flat1(unittest.TestCase):
+class FuncTest_Flat1(object):
 
     """ Create a Neuron with leak, and a current clamp, and check that the
-        Output is what we would expect.
+        output is what we would expect.
     """
 
     def test1(self):
@@ -55,3 +55,6 @@ class FuncTest_Flat1(unittest.TestCase):
 
         self.assertAlmostEqual(records['nrn_V'][t > 10].mean(), -63.1)
         self.assertAlmostEqual(records['nrn_V'][t > 10].std(),  0.0)
+
+if __name__=='__main__':
+    FuncTest_Flat1().test1()
