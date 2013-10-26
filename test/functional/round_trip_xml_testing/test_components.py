@@ -47,7 +47,7 @@ def main(src=None):
 
         # Clear the build-dir
         clear_and_recreate_dir(build_dir)
-        clear_and_recreate_dir('nineml_mechanisms')
+        clear_and_recreate_dir('.nineml_mechanisms')
 
         # Load the file:
         print '  -- Loading from file: %s' % src_file
