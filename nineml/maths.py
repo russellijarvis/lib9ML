@@ -15,7 +15,8 @@ _constants = set(['pi', 'e'])
 
 _functions = set(['exp', 'sin', 'cos', 'log', 'log10', 'pow',
                   'sinh', 'cosh', 'tanh', 'sqrt', 'mod', 'sum',
-                  'atan', 'asin', 'acos', 'asinh', 'acosh', 'atanh', 'atan2'])
+                  'atan', 'asin', 'acos', 'asinh', 'acosh', 'atanh', 'atan2'
+                  ])
 
 _reserved_symbols = set(['t'])
 
@@ -108,6 +109,8 @@ def get_builtin_symbols():
             builtins.add('%s%s%s' % (ns_name,
                                      math_namespace_separator,
                                      func))
+    # Add heaviside function:
+    builtins.add('heaviside')
     return builtins
 
 
