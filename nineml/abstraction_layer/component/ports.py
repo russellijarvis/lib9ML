@@ -37,8 +37,16 @@ class Port(object):
     them together to calculate the voltage change in the neuron.
 
     """
+    # Allow both 'receive' or 'recv' in XML:
+    _mode_map = {'send':'send',
+                 "recv":"recv",
+                 "receive":"recv",
+                 'reduce':'reduce'
+                 }
+    
     _modes = ('send', 'recv', 'reduce')
     _reduce_op_map = {'add': '+', '+': '+', }
+
 
     def __init__(self, name, mode='send', reduce_op=None):
         """ Port Constructor.
@@ -61,7 +69,7 @@ class Port(object):
 
         self.dimension = "??"
         self._name = name
-        self._mode = mode
+        self._mode = Port._mode_map.get(mode, mode)
         self._reduce_op = reduce_op
 
         if self._mode not in Port._modes:

@@ -243,7 +243,11 @@ class XMLReader(object):
             xml_node_filename_map[node] = filename
 
         root = doc.getroot()
-        assert root.nsmap[None] == nineml.al.nineml_namespace
+        if root.nsmap[None] != nineml.al.nineml_namespace:
+            print 'Expected XML namespace:', nineml.al.nineml_namespace
+            print 'Found XML namespace:', root.nsmap[None]
+            assert False, "Mismatch between XML-namespaces"            
+
 
         # Recursively Load Include Nodes:
         for include_element in root.getiterator(tag=nineml.al.NINEML + 'Include'):
