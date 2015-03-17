@@ -22,13 +22,23 @@ from nineml.utils import check_list_contain_same_items
 from itertools import chain
 from nineml.abstraction_layer.dynamics import (
     TimeDerivative, Regime, StateVariable)
+from nineml.user_layer.component import Dynamics
 import sympy
 import nineml
 from nineml.xmlns import E
+#from nineml.extensions import kinetics
+from neuron.rxd import reaction
 
 def inf_check(l1, l2, desc):
     check_list_contain_same_items(l1, l2, desc1='Declared',
                                   desc2='Inferred', ignore=['t'], desc=desc)
+
+
+class Kinetics(Dynamics):
+    """
+    docstring needed
+    """
+    pass
 
 
 class KineticsClass(DynamicsClass):
@@ -195,9 +205,9 @@ class KineticsBlock(DynamicsBlock):
             regimes=regimes, aliases=aliases, state_variables=state_variables,
             constants=constants)
 
-    def accept_visitor(self, visitor, **kwargs):
-        """ |VISITATION| """
-        return visitor.visit_dynamicsblock(self, **kwargs)
+#    def accept_visitor(self, visitor, **kwargs):
+#        """ |VISITATION| """
+#        return visitor.visit_kineticsblock(self, **kwargs)
 
     def __repr__(self):
         return ('KineticsBlock({} regimes, {} aliases, {} state_variables, '
@@ -216,15 +226,17 @@ class Constraint(Expression, BaseALObject):
 
     defining_attributes = ('_state', '_rhs')
 
-    def accept_visitor(self, visitor, **kwargs):
-        """ |VISITATION| """
-        return visitor.visit_statevariable(self, **kwargs)
-
     # constructor for making Constraint object.
     def __init__(self, expr, state):
         BaseALObject.__init__(self)
         Expression.__init__(self, expr)
         self._state = state
+
+
+#    def accept_visitor(self, visitor, **kwargs):
+#        """ |VISITATION| """
+#        return visitor.visit_constraint(self, **kwargs)
+
 
     @property
     def state(self):
@@ -237,6 +249,11 @@ class ReactionRate(Alias):
         self.rhs = expr
         self._reaction = None
 
+#    def accept_visitor(self, visitor, **kwargs):
+#        """ |VISITATION| """
+#        return visitor.visit_reaction_rate(self, **kwargs)
+
+
     def set_reaction(self, reaction):
         if self._reaction is not None:
             raise NineMLRuntimeError(
@@ -247,6 +264,47 @@ class ReactionRate(Alias):
     @property
     def lhs(self):
         return self.name
+
+
+class ForwardRate(ReactionRate):
+
+    """Represents a first-order, ordinary differential equation with respect to
+    time.
+
+    """
+    defining_attributes = ('_rhs')
+
+    element_name = 'ForwardRate'
+
+#    def accept_visitor(self, visitor, **kwargs):
+#        """ |VISITATION| """
+#        return visitor.visit_forward_rate(self, **kwargs)
+
+
+    @property
+    def name(self):
+        return 'ReactionRate__from{}_to{}'.format(self._reaction.from_state,
+                                                  self._reaction.to_state)
+
+
+class ReverseRate(ReactionRate):
+
+    """Represents a first-order, ordinary differential equation with respect to
+    time.
+
+    """
+    defining_attributes = ('_rhs')
+
+    element_name = 'ReverseRate'
+#    def accept_visitor(self, visitor, **kwargs):
+#        """ |VISITATION| """
+#        return visitor.visit_reverse_rate(self, **kwargs)
+
+
+    @property
+    def name(self):
+        return 'ReactionRate__from{}_to{}'.format(self._reaction.to_state,
+                                                  self._reaction.from_state)
 
 
 class Reaction(BaseALObject):
@@ -262,7 +320,7 @@ class Reaction(BaseALObject):
 
     def accept_visitor(self, visitor, **kwargs):
         """ |VISITATION| """
-        return visitor.visit_statevariable(self, **kwargs)
+        return visitor.visit_reaction(self, **kwargs)
 
     def __init__(self, from_state, to_state, forward_rate, reverse_rate):
 
@@ -321,7 +379,7 @@ class KineticState(BaseALObject, ExpressionSymbol):
 
     def accept_visitor(self, visitor, **kwargs):
         """ |VISITATION| """
-        return visitor.visit_statevariable(self, **kwargs)
+        return visitor.visit_kinetic_state(self, **kwargs)
 
     def __init__(self, name, dimension=None):
         """StateVariable Constructor
@@ -352,61 +410,68 @@ class KineticState(BaseALObject, ExpressionSymbol):
         return sympy.Symbol(self.name)
 
 
-class ForwardRate(ReactionRate):
-
-    """Represents a first-order, ordinary differential equation with respect to
-    time.
-
-    """
-    defining_attributes = ('_rhs')
-
-    element_name = 'ForwardRate'
-
-    @property
-    def name(self):
-        return 'ReactionRate__from{}_to{}'.format(self._reaction.from_state,
-                                                  self._reaction.to_state)
-
-
-class ReverseRate(ReactionRate):
-
-    """Represents a first-order, ordinary differential equation with respect to
-    time.
-
-    """
-    defining_attributes = ('_rhs')
-
-    element_name = 'ReverseRate'
-
-    @property
-    def name(self):
-        return 'ReactionRate__from{}_to{}'.format(self._reaction.to_state,
-                                                  self._reaction.from_state)
-
 
 class KineticsClassXMLWriter(DynamicsClassXMLWriter):
+    '''
+    Unfinished Class.
+    Once Implemented this outputs an     actual XML Kinetics Class
+    With the appropriate Kinetics Block.
+    TODO: mostly everything in this class.
+    '''
 
-    @annotate_xml
-    def visit_componentclass(self, componentclass):
-        elements = ([p.accept_visitor(self)
-                     for p in componentclass.analog_ports] +
-                    [p.accept_visitor(self)
-                     for p in componentclass.event_ports] +
-                    [p.accept_visitor(self)
-                     for p in componentclass.parameters] +
-                    [componentclass._main_block.accept_visitor(self)])
-        return E('ComponentClass', *elements, name=componentclass.name)
 
+
+#     @annotate_xml
+#     def visit_componentclass(self, componentclass):
+#         elements = ([p.accept_visitor(self)
+#                      for p in componentclass.analog_ports] +
+#                     [p.accept_visitor(self)
+#                      for p in componentclass.event_ports] +
+#                     [p.accept_visitor(self)
+#                      for p in componentclass.parameters] +
+#                     [componentclass._main_block.accept_visitor(self)])
+#         return E('ComponentClass', *elements, name=componentclass.name)
+# 
+#     
+#     
+#     def visit_dynamicsblock(self, dynamicsblock):
+#         elements = ([b.accept_visitor(self)
+#                      for b in dynamicsblock.state_variables] +
+#                     [r.accept_visitor(self) for r in dynamicsblock.regimes] +
+#                     [a.accept_visitor(self) for a in dynamicsblock.aliases] +
+#                     [c.accept_visitor(self) for c in dynamicsblock.constants] +
+#                     [rv.accept_visitor(self) for rv in dynamicsblock.random_variables] +
+#                     [p.accept_visitor(self) for p in dynamicsblock.piecewises])
+#         return E('Dynamics', *elements)
+    
+#             subblocks = ('KineticState', 'Reaction', 'Constraint',
+#                      'ForwardRate', 'ReverseRate', 'Alias')
+#         subnodes = self._load_blocks(element, blocks=subblocks)
+#              kinetic_states=subnodes["KineticState"],
+#             aliases=subnodes["Alias"],
+#             reactions=subnodes["Reaction"],
+#             constraints=subnodes["Constraint"],   
+#     
     @annotate_xml
-    def visit_dynamicsblock(self, dynamicsblock):
-        elements = ([b.accept_visitor(self)
-                     for b in dynamicsblock.state_variables] +
-                    [r.accept_visitor(self) for r in dynamicsblock.regimes] +
-                    [b.accept_visitor(self) for b in dynamicsblock.aliases] +
-                    [c.accept_visitor(self) for c in dynamicsblock.constants] +
-                    [c.accept_visitor(self) for c in dynamicsblock.random_variables] +
-                    [c.accept_visitor(self) for c in dynamicsblock.piecewises])
-        return E('Dynamics', *elements)
+    def visit_kineticsblock(self, kinetics):
+        elements = ([r.accept_visitor(self) for r in kinetics.kinetic_states] +
+                    [b.accept_visitor(self) for b in kinetics.regimes] +
+                    [b.accept_visitor(self) for b in kinetics.reactions] +
+                    [c.accept_visitor(self) for c in kinetics.constants] +
+                    [c.accept_visitor(self) for c in kinetics.random_variables] +
+                    [c.accept_visitor(self) for c in kinetics.piecewises])
+        return E('KineticsBlock', *elements)
+
+#(from_state, to_state, forward_rate, reverse_rate)
+    @annotate_xml
+    def visit_reaction(self, reaction):
+        nodes = ([node.accept_visitor(self)
+                  for node in regime.time_derivatives] +
+                 [node.accept_visitor(self) for node in reaction.on_events] +
+                 [node.accept_visitor(self) for node in reaction.on_conditions])
+        return E('Reaction', name=regime.name, *nodes)
+
+
 
     @annotate_xml
     def visit_regime(self, regime):
@@ -415,12 +480,29 @@ class KineticsClassXMLWriter(DynamicsClassXMLWriter):
                  [node.accept_visitor(self) for node in regime.on_events] +
                  [node.accept_visitor(self) for node in regime.on_conditions])
         return E('Regime', name=regime.name, *nodes)
+  
+   
+    @annotate_xml
+    def visit_timederivative(self, time_derivative):
+        return E('TimeDerivative',
+                 E("MathInline", time_derivative.rhs_str),
+                 variable=time_derivative.dependent_variable)
+
+
+
+    @annotate_xml
+    def visit_kinetic_state_variable(self, kinetics):
+        return E('KineticState',
+                 name=kinetics.kinetic_states.name,
+                 dimension=kinetics.kinetic_states.dimension.name)
 
     @annotate_xml
     def visit_statevariable(self, state_variable):
         return E('StateVariable',
                  name=state_variable.name,
                  dimension=state_variable.dimension.name)
+        
+        
 
     @annotate_xml
     def visit_outputevent(self, event_out):
@@ -456,12 +538,7 @@ class KineticsClassXMLWriter(DynamicsClassXMLWriter):
                  E("MathInline", assignment.rhs_str),
                  variable=assignment.lhs)
 
-    @annotate_xml
-    def visit_timederivative(self, time_derivative):
-        return E('TimeDerivative',
-                 E("MathInline", time_derivative.rhs_str),
-                 variable=time_derivative.dependent_variable)
-
+ 
     @annotate_xml
     def visit_oncondition(self, on_condition):
         nodes = chain(on_condition.state_assignments,
