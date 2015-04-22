@@ -19,11 +19,27 @@ from nineml.annotations import annotate_xml, read_annotations
 class ConnectionRule(ComponentClass):
 
     element_name = 'ConnectionRule'
-    defining_attributes = ('name', '_parameters', 'standard_library')
+    defining_attributes = ('name', '_parameters', '_select', '_constants',
+                           '_aliases')
 
-    def __init__(self, name, parameters=None):
+    def __init__(self, name, select, parameters=None, constants=None,
+                 aliases=None):
         super(ConnectionRule, self).__init__(
-            name, parameters)
+            name=name, parameters=parameters, aliases=aliases,
+            constants=constants)
+        self._select = select
+
+    def selects(self):
+        """
+        Iterate through nested select statements
+        """
+        select = self._select
+        yield select
+        if select.select is not None:
+            select = self._select
+            yield select
+        else:
+            raise StopIteration
 
     def accept_visitor(self, visitor, **kwargs):
         """ |VISITATION| """
