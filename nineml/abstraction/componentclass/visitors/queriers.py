@@ -77,14 +77,6 @@ class ComponentRequiredDefinitions(object):
         if self._is_required(parameter):
             self.parameters.add(parameter)
 
-    def action_analogreceiveport(self, port, **kwargs):  # @UnusedVariable
-        if self._is_required(port):
-            self.ports.add(port)
-
-    def action_analogreduceport(self, port, **kwargs):  # @UnusedVariable
-        if self._is_required(port):
-            self.ports.add(port)
-
     def action_constant(self, constant, **kwargs):  # @UnusedVariable
         if self._is_required(constant):
             self.constants.add(constant)
@@ -101,7 +93,7 @@ class ComponentRequiredDefinitions(object):
             # dependencies are added first
             self._push_required_symbols(alias)
             self.visit(self._componentclass)
-            self._required_stack.pop()
+            self._required_stack.pop()  # Remove required symbols for alias
             self.expressions.append(alias)
 
     @property
