@@ -14,7 +14,7 @@ docstring goes here
 """
 from ..componentclass import ComponentClass
 from nineml.annotations import annotate_xml, read_annotations
-from nineml.abstraction_layer.ports import PropertyReceivePort
+from nineml.abstraction.ports import PropertyReceivePort
 
 
 class ConnectionRule(ComponentClass):
@@ -98,6 +98,7 @@ class ConnectionRule(ComponentClass):
     def from_xml(cls, element, document):
         return ConnectionRuleXMLLoader(document).load_connectionruleclass(
             element)
+
 
 from .visitors.cloner import ConnectionRuleCloner
 from .visitors.modifiers import (
