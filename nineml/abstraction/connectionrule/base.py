@@ -21,8 +21,10 @@ class ConnectionRule(ComponentClass):
 
     element_name = 'ConnectionRule'
     defining_attributes = ('name', '_parameters', '_select', '_constants',
-                           '_aliases')
-    class_to_member_dict = {PropertyReceivePort: '_property_receive_ports'}
+                           '_aliases', '_property_receive_ports', '_property_receive_port')
+   
+    #class_to_member_dict = {PropertyReceivePorts: '_property_receive_ports'}
+    #class_to_member_dict = {PropertyReceivePort: '_property_receive_port'}
 
     def __init__(self, name, select, parameters=None, constants=None,
                  aliases=None):
@@ -43,8 +45,16 @@ class ConnectionRule(ComponentClass):
     def property_receive_port_names(self):
         return self._property_receive_ports.iterkeys()
 
+    #This method is actually more correct than one below.
+    #maybe the attribute does not exist because _property_recieve_ports never exists.
+    @property
     def property_receive_port(self, name):
         return self._property_receive_ports[name]
+
+
+    #@property
+    #def property_receive_port(self):#, name):
+    #    return self._property_receive_port.itervalues()
 
     @property
     def selects(self):
@@ -98,6 +108,38 @@ class ConnectionRule(ComponentClass):
     def from_xml(cls, element, document):
         return ConnectionRuleXMLLoader(document).load_connectionruleclass(
             element)
+
+
+    # Parenting:
+    def set_parent_model(self, parentmodel):
+        """Sets the parent component for this component"""
+        assert not self._parentmodel
+        self._parentmodel = parentmodel
+
+    def get_parent_model(self):
+        """Gets the parent component for this component"""
+        return self._parentmodel
+
+    #def validate(self):
+    #    """ Over-ridden in mix'ed class"""
+    #    raise NotImplementedError()
+    
+    
+    def validate(self):
+        pass
+        #self._resolve_transition_regimes()
+        #DynamicsValidator.validate_componentclass(self)
+
+    def get_node_addr(self):
+        """Get the namespace address of this component"""
+        parent = self.get_parent_model()
+        if not parent:
+            return NamespaceAddress.create_root()
+        else:
+            contained_namespace = invert_dictionary(parent.subnodes)[self]
+            return parent.get_node_addr().get_subns_addr(contained_namespace)
+
+
 
 
 from .visitors.cloner import ConnectionRuleCloner

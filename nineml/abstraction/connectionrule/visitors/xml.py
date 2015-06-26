@@ -21,12 +21,12 @@ class ConnectionRuleXMLLoader(ComponentClassXMLLoader):
 
     @read_annotations
     def load_connectionruleclass(self, element):
-        block_names = ('Parameter', 'PropertyRecievePort', 'Constant',
+        block_names = ('Parameter', 'PropertyReceivePort', 'Constant',
                        'Alias', 'Select')
         blocks = self._load_blocks(element, block_names=block_names)
         return ConnectionRule(
             name=element.attrib['name'],
-#             propertyrecieveport=blocks["PropertyRecievePort"],
+            propertyrecieveport=blocks["PropertyReceivePort"],
             parameters=blocks["Parameter"],
             constants=blocks["Constant"],
             aliases=blocks["Alias"],
@@ -69,3 +69,4 @@ class ConnectionRuleXMLWriter(ComponentClassXMLWriter):
 
 from ..base import ConnectionRule
 from ..select import Select
+from nineml.document import Document

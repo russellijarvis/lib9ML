@@ -16,7 +16,10 @@ class ConnectionRuleActionVisitor(ComponentActionVisitor):
     def visit_componentclass(self, component_class, **kwargs):
         super(ConnectionRuleActionVisitor, self).visit_componentclass(
             component_class, **kwargs)
-
+        
+    def visit_property_receive_port(self, property_receive_port, **kwargs):    
+        self.action_property_receive_port(property_receive_port, **kwargs)
+        
     def visit_number(self, number, **kwargs):
         self.action_number(number, **kwargs)
 

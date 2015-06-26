@@ -1,98 +1,158 @@
-import unittest
-import nineml.abstraction_layer as al
+import nineml.abstraction as al
 from IPython.utils._tokenize_py2 import Number
-#from nineml.abstraction_layer.connectionrule.select import Preference
-# from docutils.parsers.rst.directives.misc import Replace
-#print al.ConnectionRuleXMLLoader
-#import al.connectionrule
-# I suspect non of the import statements above because the abstraction directory has been refactored to abstraction.
-#al.ConnectionRuleXMLWriter
+from nineml.abstraction.connectionrule import *
+from nineml.abstraction import connectionrule
+#from nineml.annotations import annotate_xml, read_annotations
+#Not an actual XML document yet.
+from nineml.xmlns import NINEML, E
+import unittest
+
+from nineml.abstraction import connectionrule as cr
+from copy import copy, deepcopy
+from nineml.abstraction.expressions import (
+    Expression, Alias, ExpressionSymbol)
 
 
-#The self argument implies that this method is inside a class.
+from nineml import annotations 
+from nineml import utils
+from nineml.annotations import read_annotations
 
-to=TestConnectionRule()
-to.test_xml_roundtrip()             
-to.get_component()
+from itertools import chain
+from collections import Counter
+from nineml.abstraction.dynamics import TimeDerivative, Regime, StateVariable
+from sympy import symbols
+import sympy
+
+from nineml.document import Document
+#def inf_check(l1, l2, desc):
+#    check_list_contain_same_items(l1, l2, desc1='Declared',
+#                                  desc2='Inferred', ignore=['t'], desc=desc)
 
 
-class TestConnectionRule(unittest.TestCase):
+import nineml.abstraction as al
+import os
+import nineml
+
+
+#First import a whole bunch of examples and show that that the XML documents are able to be converted into lxml Documents
+#And from xml documents they are successfuly get converted to a collection of python component class instance objects contained 
+#inside objects objects.
+
+
+c1 = nineml.read("/home/russell/git/lib9ml/test/xml/connectionrules/ExplicitConnectionList.xml")
+c2 = nineml.read("/home/russell/git/lib9ml/test/xml/connectionrules/RandomFanOut.xml")
+c3 = nineml.read("/home/russell/git/lib9ml/test/xml/connectionrules/ProbabilisticConnectivity.xml")
+c4 = nineml.read("/home/russell/git/lib9ml/test/xml/connectionrules/RandomFanIn.xml")
+c5 = nineml.read("/home/russell/git/lib9ml/test/xml/neurons/HodgkinHuxleyClass.xml")
+c5.items()
+
+# No-where are the Python objects c[1-5] required by the code below, they are here only for an educational purpose.
+
+
+
+#Bypass XML documents and create instances of the ConnectionRule class by creating the required attributes, and component classes
+#directly within python.
+
+def get_component():
+
+    cr.ConnectionRuleXMLLoader    
+    cr.ConnectionRuleXMLWriter   
+    # No-where are the Python objects cr.ConnectionRuleXMLLoader/Writer required by the code below, they are here only for an educational purpose.
+
+    pms = ['k']
+    pms = ['k', 'mu1', 'mu2', 'sigma1', 'sigma2', 'gkbar', 'gnabar', 'theta', 'gl','celsius', ]
+    mask=cr.select.Mask.rhs="(GLdistance < dendradius) && (numMFconn == 0) && (ProbMFGoC > rand)"    
+    return nineml.abstraction.ConnectionRule(name='ringnetwork',select=mask,parameters=pms,constants=None, aliases=None)
+
+pc=get_component() #pc=python made component object.
+b=pc.to_xml()
+
+for b in enumerate(b.items()): print b
+print pc.select
+#cr2 = connection rule 2.
+cr2=cr.ConnectionRuleXMLLoader(pc)
+print cr2
+
+
+class TestConnectionRule(unittest.TestCase, Document):
+    # What annotations, there is no actual XML doc, so don't worry
+    # about this function decorator!
+    #@read_annotations
+
+    
+    def runTest():
+        pass
     def test_xml_round_trip(self): 
-        #write Python objects here.
-        #For connection Rules.
-        get_component()
-    
-        al.ConnectionRuleXMLWriter
-    
-        ConnectionRule(
-            name=element.get('MF2GC'),
-            propertyrecieveport=blocks[""],
-            parameters=blocks["Parameter"],
-            constant=blocks["Constant"],
-            alias=blocks["Alias"],
-            select=blocks["Select"]
-        )
-        
-        Select(  
-            mask=blocks["mask"],
-            number=blocks["number"],#Does the appropriate object get expanded here
-            preference=blocks["preference"],
-            was_selecteds=blocks["was_selected"], 
-            number_selected=blocks["number_selected"],
-            random_variables=blocks["random_variables"], 
-            select=blocks["select"], 
-            repeat_whiles=blocks["repeat_while"]
-        )
-        return
+        blocks = ('name','Parameter','Constant','Alias','Select')
 
-        #pass
-        # 
-        # Parameter
-        # PropertyReceivePort
-        # Select
-        # Constant
-        # Alias 
-        
-        #     <Parameter name="k" dimension="dimensionless"/>  
-        #     <Parameter name="mu1" dimension="dimensionless" container="source"/>
-        #     <Parameter name="sigma1" dimension="dimensionless" container="source"/>
-        #     <Parameter name="mu2" dimension="dimensionless" container="source"/>
-        #     <Parameter name="sigma2" dimension="dimensionless" container="source"/>
+
+        def setUp(self):
+            self.c = Constant(name="faraday", value=96485.3365, units=coulomb)
+            self.pms = ['k', 'mu1', 'mu2', 'sigma1', 'sigma2', 'gkbar', 'gnabar', 'theta', 'gl','celsius', ]
+            self.mask=cr.select.Mask.rhs="(GLdistance < dendradius) && (numMFconn == 0) && (ProbMFGoC > rand)"    
+
+
+        def test_xml_roundtrip(self):
+            writer = XMLWriter()
+            #Above c is a component attribute of this instance object (self), as opposed to class object (cls).
+            xml = self.c.accept_visitor(writer)
+            #loader = XMLLoader(Document(coulomb))
+            #c = loader.load_constant(xml)
+            #self.assertEqual(c, self.c, "Constant failed xml roundtrip")
+
+
+        def load_xml_doc():
+            al.ConnectionRuleXMLLoader
+
+
 
         def get_component():
-         
-            parameters = ['k', 'mu1', 'sigma1', 'mu2', 'sigma2']
-            crc = al.ConnectionRuleClass("",ConnectCondition=["abs(i-j)<= k"] )  #A list of strings.              
-            return crc
+            return nineml.abstraction.ConnectionRule(name='ringnetwork',select=mask,parameters=pms,constants=None, aliases=None)
         
-            #                              SelectConnections=[]
-            #                              
-            #                              #Number
-            #                              #Preference
-            #                              #Replace
-            #  
-            '''
-            al.Regime(
-                name="subthresholdregime",
-                time_derivatives=[
-                    "-g_L*(V-E_L)/C_m + g_L*Delta*exp((V-V_T)/Delta-w/S)/C_m+ Isyn/C_m",
-                    "dw/dt = (a*(V-E_L)-w)/tau_w", ],
-                transitions=al.On("V > V_T",
-                    do=["V = E_L",
-                        "w = w + b",
-                        al.OutputEvent('spikeoutput')],
-                        to="refractoryregime"),
-                                 ),
+        #@annotate_xml
+        def to_xml(self):
+            self.standardize_unit_dimensions()
+            self.validate()
+            return ConnectionRuleXMLWriter().visit(self)
+
+        #@classmethod
+        #@read_annotations
+        def from_xml(cls, element, document):
+            return ConnectionRuleXMLLoader(document).load_connectionruleclass(element)
+
+
+            
+
+class ConnectionRuletest(unittest.TestCase):
+
+    def setUp(self):
+        self.c = nineml.abstraction.ConnectionRule.parameter(name="k")
+
+    def test_accept_visitor(self):
+        # Signature: name(self, visitor, **kwargs)
+                # |VISITATION|
+
+        class ConstantTestVisitor(TestVisitor):
+
+            def visit_constant(self, component, **kwargs):  # @UnusedVariable @IgnorePep8
+                return kwargs
+
+        v = ConstantTestVisitor()
+        self.assertEqual(
+            v.visit(self.c, kwarg1='Hello', kwarg2='Hello2'),
+            {'kwarg1': 'Hello', 'kwarg2': 'Hello2'}
+        )
+
+    def test_xml_roundtrip(self):
+        writer = XMLWriter()
+        xml = self.c.accept_visitor(writer)
+        loader = XMLLoader(Document(coulomb))
+        c = loader.load_constant(xml)
+        self.assertEqual(c, self.c, "Constant failed xml roundtrip")
+
          
-                al.Regime(
-                    name="refractoryregime",
-                    transitions=al.On("t>=tspike+trefractory",
-                    to="subthresholdregime"),
-                )],
-            analog_ports=[al.AnalogReducePort("Isyn", operator="+")]
-            )
-         
-            return crc
-            '''
-             
-         
+
+
+to=TestConnectionRule()
+to.test_xml_round_trip()
+
